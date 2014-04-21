@@ -1,5 +1,8 @@
 require "tinyforth/version"
+require "./bin/tinyforth"
 
 module Tinyforth
-  # Your code goes here...
+  def self.execute(code_string)
+    ""
+  end
 end
