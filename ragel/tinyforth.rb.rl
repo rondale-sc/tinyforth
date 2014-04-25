@@ -2,18 +2,26 @@
  machine lexer;
 
  # Machine
- whitespace = " ";
- number = [0-9]+;
- keyword = ".";
+ colon      = ":";
+ keyword    = ".";
+ number     = digit+ ("." digit+)?;
+ whitespace = space+;
+ word       = (ascii - space - number)+;
 
  # Actions
 ￼￼
- main := |*
-   whitespace;  # ignore
-   number => { tokens << [:number, data[ts..te].to_i] };
-   keyword => { tokens << [:keyword, data[ts...te]] };
+ name := |*
+  whitespace => { tokens << [:delimiter] };
+  word       => { tokens << [:name, data[ts..te-1]]; fgoto main; };
  *|;
 
+ main := |*
+   colon      => { tokens << [:colon, data[ts..te-1]]; fgoto name; };
+   keyword    => { tokens << [:keyword, data[ts..te-1]] };
+   word       => { tokens << [:word, data[ts..te-1]] };
+   number     => { tokens << [:number, data[ts..te-1]] };
+   whitespace => { tokens << [:delimiter] };
+ *|;
 }%%
 
 class Tinyforth::Lexer
